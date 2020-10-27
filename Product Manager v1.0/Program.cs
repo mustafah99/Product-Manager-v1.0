@@ -46,6 +46,23 @@ namespace Product_Manager_v1._0
 
                         ListTasks();
 
+                        ConsoleKeyInfo escDeleteEdit = ReadKey(true);
+
+                        if (escDeleteEdit.Key == ConsoleKey.Escape)
+                        {
+                            Clear();
+
+                            break;
+                        }
+                        else if (escDeleteEdit.Key == ConsoleKey.D)
+                        {
+                            // Code here
+                        }
+                        else if (escDeleteEdit.Key == ConsoleKey.D)
+                        {
+                            // Code here
+                        }
+
                         break;
                     case ConsoleKey.D3:
                         Clear();
@@ -163,7 +180,7 @@ namespace Product_Manager_v1._0
             var myProductList = FetchMyTasks();
 
             WriteLine(" ");
-            
+
             foreach (var myProduct in myProductList)
             {
                 WriteLine($" Article Number: {myProduct.articleNumber}");
