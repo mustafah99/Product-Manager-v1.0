@@ -46,23 +46,6 @@ namespace Product_Manager_v1._0
 
                         ListTasks();
 
-                        ConsoleKeyInfo escDeleteEdit = ReadKey(true);
-
-                        if (escDeleteEdit.Key == ConsoleKey.Escape)
-                        {
-                            Clear();
-
-                            break;
-                        }
-                        else if (escDeleteEdit.Key == ConsoleKey.D)
-                        {
-                            // Code here
-                        }
-                        else if (escDeleteEdit.Key == ConsoleKey.D)
-                        {
-                            // Code here
-                        }
-
                         break;
                     case ConsoleKey.D3:
                         Clear();
@@ -175,6 +158,109 @@ namespace Product_Manager_v1._0
             return myProductList;
         }
 
+        private static void UpdateTask()
+        {
+            WriteLine(" ");
+
+            Write("Enter article number of task to update: ");
+
+            string searchByArticleNumber = ReadLine();
+
+            Clear();
+
+            WriteLine($"Editing Task with Article Number: {searchByArticleNumber}");
+
+            WriteLine(" ");
+
+            Write("Article Number: ");
+            var articleNumber = ReadLine();
+
+            Write("          Name: ");
+            var name = ReadLine();
+
+            Write("   Description: ");
+            var description = ReadLine();
+
+            Write("         Price: ");
+            int price = Convert.ToInt32(ReadLine());
+
+            //var sql = $@"UPDATE Products SET ArticleNumber = {articleNumber}, Name = {name}, Description = {description}, Price = {price} WHERE ArticleNumber={searchByArticleNumber}";
+
+            var sql = $@"UPDATE Products SET ArticleNumber = @ArticleNumber, Name = @Name , Description = @Description, Price = @Price WHERE ArticleNumber = {searchByArticleNumber} ";
+
+            Console.CursorVisible = false;
+
+            WriteLine(" ");
+            WriteLine("Is this correct? (Y)es (N)o");
+
+            ConsoleKeyInfo yesNo = ReadKey(true);
+
+            if (yesNo.Key == ConsoleKey.Y)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@ArticleNumber", articleNumber);
+                        command.Parameters.AddWithValue("@Name", name);
+                        command.Parameters.AddWithValue("@Description", description);
+                        command.Parameters.AddWithValue("@Price", price);
+
+                        connection.Open();
+
+                        command.ExecuteNonQuery();
+
+                        connection.Close();
+                    }
+                }
+
+                Clear();
+
+                WriteLine("Article updated.");
+
+                Thread.Sleep(2000);
+
+                Clear();
+            }
+            else if (yesNo.Key == ConsoleKey.N)
+            {
+                Clear();
+            }
+
+            Clear();
+
+        }
+
+        private static void DeleteTask()
+        {
+            WriteLine(" ");
+
+            Write("Enter article number of task to delete: ");
+
+            string searchByArticleNumber = ReadLine();
+
+            //string sql = "SELECT ArticleNumber, Name, Description, Price FROM Products";
+
+            string sql = $@"DELETE FROM Products WHERE ArticleNumber = {searchByArticleNumber}";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                connection.Close();
+            }
+
+            Clear();
+
+            WriteLine("Article deleted.");
+
+            Thread.Sleep(2000);
+
+            Clear();
+        }
+
         private static void ListTasks()
         {
             var myProductList = FetchMyTasks();
@@ -198,9 +284,23 @@ namespace Product_Manager_v1._0
 
             WriteLine(" [E] Edit [D] Delete [Esc] Main Menu");
 
-            Console.ReadKey(true);
+            ConsoleKeyInfo escDeleteEdit = ReadKey(true);
 
-            Console.Clear();
+            if (escDeleteEdit.Key == ConsoleKey.Escape)
+            {
+                Clear();
+
+            }
+            else if (escDeleteEdit.Key == ConsoleKey.E)
+            {
+                UpdateTask();
+            }
+            else if (escDeleteEdit.Key == ConsoleKey.D)
+            {
+                DeleteTask();
+            }
+
+            Clear();
         }
 
     }
